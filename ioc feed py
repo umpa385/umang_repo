@@ -1,8 +1,6 @@
 Combined_ioc_list_path = base_path / "Combined_ioc_list.csv"
 
 
-umang_ioc_git = "https://raw.githubusercontent.com/umpa385/IOC_feed/master/IOC_feed.csv"
-
 talos_ioc = "http://www.talosintelligence.com/documents/ip-blacklist"
 
 emerging_threats_proofpoint_ioc = "https://rules.emergingthreats.net/blockrules/compromised-ips.txt"
@@ -10,10 +8,6 @@ emerging_threats_proofpoint_ioc = "https://rules.emergingthreats.net/blockrules/
 ips_spam_ioc = "http://www.ipspamlist.com/public_feeds.csv"
 
 IPsum_github_ioc ="https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt"
-
-umang_ioc_git_df = pd.read_csv(umang_ioc_git,skiprows=4,names=["ip","time","source"])
-
-umang_ioc_git_df['ioc_source'] = 'umang_ioc_git'
 
 talos_ioc_df=pd.read_csv(talos_ioc,names=["ip"])
 
