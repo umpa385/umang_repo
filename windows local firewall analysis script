@@ -1,0 +1,81 @@
+import os 
+import glob
+import socket
+import pandas as pd 
+
+#change to the current directory of where your data is
+os.chdir(r'C:\pulled_logs')
+
+#loop created for getting the file names in the directory
+filenames=[i for i in glob.glob('*.txt')] 
+
+#this is for a loop to read multiple files
+
+# this combines the text files and puts the combined file in the same path as the older files. 
+with open("combined.txt", "w") as outfile:
+    for filename in filenames:
+        with open(filename) as infile:
+            contents = infile.read()
+            outfile.write(contents)
+
+#This below is for a single read of one file
+df=pd.read_csv(r'C:\pulled_logs\combined.txt',sep=' ',header=3) 
+#this is used to adjust the column headers over by one 
+df_fixed=df.shift(periods=1,axis=1)
+
+#deleteing the none needed df anymore
+del df
+
+#getting counts of values in each column
+dst_ip=df_fixed['dst-ip'].value_counts()
+
+dst_port=df_fixed['dst-port'].value_counts()
+
+src_ip=df_fixed['src-ip'].value_counts()
+
+
+#aggregating the data for unique counts based on src,dst,port
+
+summary_df=df_fixed.groupby(["src-ip","dst-ip","dst-port"]).size().reset_index(name="count")
+
+#Getting the DNS names for the servers in destination ip
+resolved_dns=[]
+for x, value in dst_ip.items():
+    try:
+        resolved_dns.append(socket.gethostbyaddr(x))
+    except:
+        pass
+
+# Getting the DNS names for the servers in the source ip
+resolved_dns_src=[]
+for x, value in src_ip.items():
+    try:
+        resolved_dns_src.append(socket.gethostbyaddr(x))
+    except:
+        pass
+
+#making the list into a dataframe for dns for source IP and also destination IP
+
+dns=pd.DataFrame(resolved_dns,columns=['resolved_name','n/a','ip'])
+
+dns=dns.drop(columns=['n/a'])
+
+dns.to_excel(r'output path for dns')
+
+dns=pd.DataFrame(resolved_dns_src,columns=['resolved_name','n/a','ip'])
+
+dns=dns.drop(columns=['n/a'])
+
+dns.to_excel(r'output path for dns')
+
+#combine the dnslookup data to the summary dataframe need to revist if I can make the dns lookup integrated
+# into the script, but for now doing it as a xlookup in excel
+#summary_df_final=summary_df.merge(dns,left_on='dst-ip',right_on='ip')
+
+
+#sorting by descending count
+summary_df=summary_df.sort_values(by=['count'],ascending=False)
+
+#exporting the summary data frame out
+summary_df.to_excel(r'output path for summary dataframe')
+

@@ -1,0 +1,60 @@
+
+from tenable.sc import TenableSC
+import pprint as pprint 
+import pandas as pd
+
+sc = TenableSC('tenable_server_name')
+sc.login('username','password')
+
+    #asset = sc.asset_lists.details(104)
+    #pprint(asset)
+    #running=sc.scans.launch(68)
+    #print('The Scan Results ID is {}'.format(running['scanResult']['id']))
+
+    # need to keep this logout, or you will continute the session and not be able to login again
+    #sc.logout()for query in sc.queries.list():
+        
+
+    #if you want to pull in a specific scanID you can do that by using the information below.
+    #for vuln in sc.analysis.vulns(scanid=849):
+    #    print(test.append(vuln))
+
+    #If you want to pull in multiple filters you can do that by using the example below, there are two
+    #sources patched (which has less data) and the default which has more data
+    #for vuln in sc.analysis.vulns(('vprScore','=','7.0-10.0',('severity','=','5','4'),source='patched'):
+    #    print(test2.append(vuln)
+
+#tenable_data=[]
+#for vuln in sc.analysis.vulns(('vprScore','=','5.0-10.0')):
+#    print(tenable_data.append(vuln))
+    
+tenable_data=[]
+for vuln in sc.analysis.scan(Scannumber,('severity','=','1,2,3,4')):
+    print(tenable_data.append(vuln))
+        
+
+tenabledf= pd.DataFrame(tenable_data)
+
+tenabledf=tenabledf.drop(columns=['severity','acceptRisk','recastRisk','uuid','exploitEase','exploitFrameworks','stigSeverity','vprContext','temporalScore','cvssVector','cvssV3BaseScore','cvssV3TemporalScore','cvssV3Vector','cpe','checkType','version','bid','xref','uniqueness','family','repository','pluginInfo'])
+
+tenabledf['vprScore'] = pd.to_numeric(tenabledf['vprScore'])
+
+tenabledf['baseScore'] = pd.to_numeric(tenabledf['baseScore'])
+
+tenabledf['vprScore'].fillna(0,inplace=True)
+
+tenabledf['baseScore'].fillna(0,inplace=True)
+
+tenabledf['combined_score'] = tenabledf['vprScore'] + tenabledf['baseScore']
+
+tenabledf_droped_dupes=tenabledf.drop_duplicates()
+
+    #tenabledf_droped_dupes.to_excel('path')
+
+
+    # dropping this into the qlik connection bucket
+#tenabledf_droped_dupes.to_excel('path')
+#tenabledf_droped_dupes.to_excel('path')
+tenabledf_droped_dupes.to_excel('path')
+    
+sc.logout() 

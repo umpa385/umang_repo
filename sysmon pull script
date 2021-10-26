@@ -1,0 +1,35 @@
+
+from shutil import copyfile
+import os
+
+#enter machine name below
+Machine_name_list=['']
+for Machine_name in Machine_name_list:
+    try:
+
+        dst_sysmon = os.path.join('C:\pulled_logs',Machine_name +'sysmon' + '.evtx')
+
+        src_sysmon = os.path.join(r'\\',Machine_name +'\C$\Windows\System32\winevt\Logs\Microsoft-Windows-Sysmon%4Operational.evtx')
+        copyfile(src_sysmon, dst_sysmon)
+
+        dst_powershell = os.path.join('C:\pulled_logs',Machine_name + 'powershell' + '.evtx')
+
+        src_powershell = os.path.join(r'\\',Machine_name +'\C$\Windows\System32\winevt\Logs\Windows PowerShell.evtx')
+        copyfile(src_powershell, dst_powershell)
+
+        dst_firewall_old =os.path.join('C:\pulled_logs',Machine_name + 'firewall_old' '.txt')
+
+        src_firewall_old = os.path.join(r'\\',Machine_name +'\C$\Windows\System32\LogFiles\Firewall\publicfirewall.log.old')
+        copyfile(src_firewall_old, dst_firewall_old)
+
+        dst_firewall =os.path.join('C:\pulled_logs',Machine_name + 'firewall' '.txt')
+
+        src_firewall = os.path.join(r'\\',Machine_name +'\C$\Windows\System32\LogFiles\Firewall\publicfirewall.log')
+        copyfile(src_firewall, dst_firewall)
+
+        dst_task_scheduler =os.path.join('C:\pulled_logs',Machine_name + 'task_scheduler' + '.evtx')
+
+        src_task_scheduler = os.path.join(r'\\',Machine_name +'\C$\Windows\System32\winevt\Logs\Microsoft-Windows-TaskScheduler%4Operational.evtx')
+        copyfile(src_task_scheduler, dst_task_scheduler)
+    except:
+        pass

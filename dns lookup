@@ -1,0 +1,16 @@
+
+import pandas as pd 
+import socket
+#put destinations in the dsts field below
+#region data
+dsts=()
+#endregion
+resolved_dns=[]
+for x in dsts:
+    try:
+        resolved_dns.append(socket.gethostbyaddr(x))
+    except:
+        pass
+dns_resolved=pd.DataFrame(resolved_dns)
+#put in the correct path for where you want the csv outputted below.
+dns_resolved.to_csv('computer path',encoding='UTF-8')

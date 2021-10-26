@@ -1,0 +1,40 @@
+Combined_ioc_list_path = base_path / "Combined_ioc_list.csv"
+
+
+umang_ioc_git = "https://raw.githubusercontent.com/umpa385/IOC_feed/master/IOC_feed.csv"
+
+talos_ioc = "http://www.talosintelligence.com/documents/ip-blacklist"
+
+emerging_threats_proofpoint_ioc = "https://rules.emergingthreats.net/blockrules/compromised-ips.txt"
+
+ips_spam_ioc = "http://www.ipspamlist.com/public_feeds.csv"
+
+IPsum_github_ioc ="https://raw.githubusercontent.com/stamparm/ipsum/master/ipsum.txt"
+
+umang_ioc_git_df = pd.read_csv(umang_ioc_git,skiprows=4,names=["ip","time","source"])
+
+umang_ioc_git_df['ioc_source'] = 'umang_ioc_git'
+
+talos_ioc_df=pd.read_csv(talos_ioc,names=["ip"])
+
+talos_ioc_df['ioc_source'] = 'talos'
+
+emerging_threats_proofpoint_ioc_df=pd.read_csv(emerging_threats_proofpoint_ioc,names=["ip"])
+
+emerging_threats_proofpoint_ioc_df['ioc_source'] = 'emergeing_threats_proofpoint'
+
+ips_spam_ioc_df = pd.read_csv(ips_spam_ioc,skiprows=10,names=["first_seen","last_Seen","ip","category","attack_count"])
+
+ips_spam_ioc_df['ioc_source'] = 'ips_spam_list'
+
+IPsum_github_ioc_df = pd.read_csv(IPsum_github_ioc,skiprows=7,sep='\t',names=["ip","number_of_blacklists"])
+
+IPsum_github_ioc_df['ioc_source'] = 'IPsum_github'
+
+Combined_ioc_list = pd.concat([umang_ioc_git_df,talos_ioc_df,emerging_threats_proofpoint_ioc_df,ips_spam_ioc_df,internal_ioc_df,IPsum_github_ioc_df])
+
+Combined_ioc_list = Combined_ioc_list.drop(['first_seen','last_Seen','category','attwack_count','number_of_blacklists','source','time'],axis=1)
+
+Combined_ioc_list = Combined_ioc_list.drop_duplicates(['ip'])
+
+Combined_ioc_list.to_csv(Combined_ioc_list_path)
